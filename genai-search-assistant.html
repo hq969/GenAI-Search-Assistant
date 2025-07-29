@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Search Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .typing-animation::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .source-badge {
+            transition: all 0.3s ease;
+        }
+        
+        .source-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .chat-message {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Code File Header -->
+        <div class="glass-effect rounded-xl p-4 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">📄</span>
+                    </div>
+                    <div>
+                        <div class="text-white font-medium">genai-search-assistant.html</div>
+                        <div class="text-white/60 text-sm">GenAI Search Assistant • 450 lines • HTML/CSS/JS</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-green-500/20 text-green-100 px-2 py-1 rounded text-xs border border-green-400/30">Active</span>
+                    <span class="text-white/60 text-sm">Last modified: Just now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">🤖 GenAI Search Assistant</h1>
+            <p class="text-white/80 text-lg">Powered by Gemini API • Multi-source RAG • Voice-enabled</p>
+            
+            <!-- Tech Stack Badges -->
+            <div class="flex flex-wrap justify-center gap-2 mt-4">
+                <span class="source-badge bg-blue-500/20 text-blue-100 px-3 py-1 rounded-full text-sm border border-blue-400/30">Gemini API</span>
+                <span class="source-badge bg-green-500/20 text-green-100 px-3 py-1 rounded-full text-sm border border-green-400/30">React</span>
+                <span class="source-badge bg-purple-500/20 text-purple-100 px-3 py-1 rounded-full text-sm border border-purple-400/30">LangChain</span>
+                <span class="source-badge bg-orange-500/20 text-orange-100 px-3 py-1 rounded-full text-sm border border-orange-400/30">Pinecone</span>
+                <span class="source-badge bg-red-500/20 text-red-100 px-3 py-1 rounded-full text-sm border border-red-400/30">Flask</span>
+            </div>
+        </div>
+
+        <!-- Search Interface -->
+        <div class="glass-effect rounded-2xl p-6 mb-6">
+            <div class="flex gap-3 mb-4">
+                <div class="flex-1 relative">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Ask me anything... I'll search Google, internal docs, and provide AI-powered insights"
+                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    >
+                    <div id="voiceIndicator" class="absolute right-3 top-3 hidden">
+                        <div class="w-6 h-6 bg-red-500 rounded-full pulse-animation flex items-center justify-center">
+                            <div class="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+                <button 
+                    id="voiceBtn"
+                    class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors duration-200 flex items-center gap-2"
+                >
+                    🎤 Voice
+                </button>
+                <button 
+                    id="searchBtn"
+                    class="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-200 font-medium"
+                >
+                    Search
+                </button>
+            </div>
+            
+            <!-- Search Options -->
+            <div class="flex flex-wrap gap-3">
+                <label class="flex items-center gap-2 text-white/80">
+                    <input type="checkbox" id="googleSearch" checked class="rounded">
+                    <span>Google Search</span>
+                </label>
+                <label class="flex items-center gap-2 text-white/80">
+                    <input type="checkbox" id="internalDocs" checked class="rounded">
+                    <span>Internal Docs</span>
+                </label>
+                <label class="flex items-center gap-2 text-white/80">
+                    <input type="checkbox" id="ragMode" checked class="rounded">
+                    <span>RAG Enhancement</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div id="chatContainer" class="glass-effect rounded-2xl p-6 min-h-96 max-h-96 overflow-y-auto mb-6">
+            <div id="chatMessages">
+                <div class="chat-message mb-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                            AI
+                        </div>
+                        <div class="flex-1">
+                            <div class="bg-white/10 rounded-lg p-3 text-white">
+                                <p>👋 Hello! I'm your GenAI Search Assistant. I can help you find information from multiple sources including Google Search and internal documentation. Try asking me something!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="glass-effect rounded-xl p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div id="statusIndicator" class="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <span id="statusText" class="text-white/80 text-sm">Ready</span>
+                    </div>
+                    <div class="text-white/60 text-sm">
+                        Sources: <span id="sourceCount">0</span> • Tokens: <span id="tokenCount">0</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="clearChat" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white/80 rounded-lg text-sm transition-colors">
+                        Clear Chat
+                    </button>
+                    <button id="exportChat" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white/80 rounded-lg text-sm transition-colors">
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GenAISearchAssistant {
+            constructor() {
+                this.isListening = false;
+                this.recognition = null;
+                this.chatMessages = document.getElementById('chatMessages');
+                this.searchInput = document.getElementById('searchInput');
+                this.statusIndicator = document.getElementById('statusIndicator');
+                this.statusText = document.getElementById('statusText');
+                this.sourceCount = document.getElementById('sourceCount');
+                this.tokenCount = document.getElementById('tokenCount');
+                
+                this.initializeVoiceRecognition();
+                this.bindEvents();
+                this.simulateInitialization();
+            }
+            
+            initializeVoiceRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'en-US';
+                    
+                    this.recognition.onstart = () => {
+                        this.isListening = true;
+                        document.getElementById('voiceIndicator').classList.remove('hidden');
+                        this.updateStatus('Listening...', 'blue');
+                    };
+                    
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        this.searchInput.value = transcript;
+                        this.performSearch(transcript);
+                    };
+                    
+                    this.recognition.onend = () => {
+                        this.isListening = false;
+                        document.getElementById('voiceIndicator').classList.add('hidden');
+                        this.updateStatus('Ready', 'green');
+                    };
+                }
+            }
+            
+            bindEvents() {
+                document.getElementById('voiceBtn').addEventListener('click', () => {
+                    if (this.recognition) {
+                        if (this.isListening) {
+                            this.recognition.stop();
+                        } else {
+                            this.recognition.start();
+                        }
+                    } else {
+                        alert('Voice recognition not supported in this browser');
+                    }
+                });
+                
+                document.getElementById('searchBtn').addEventListener('click', () => {
+                    const query = this.searchInput.value.trim();
+                    if (query) {
+                        this.performSearch(query);
+                    }
+                });
+                
+                this.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = this.searchInput.value.trim();
+                        if (query) {
+                            this.performSearch(query);
+                        }
+                    }
+                });
+                
+                document.getElementById('clearChat').addEventListener('click', () => {
+                    this.clearChat();
+                });
+                
+                document.getElementById('exportChat').addEventListener('click', () => {
+                    this.exportChat();
+                });
+            }
+            
+            simulateInitialization() {
+                this.updateStatus('Initializing Gemini API...', 'yellow');
+                setTimeout(() => {
+                    this.updateStatus('Loading vector database...', 'yellow');
+                    setTimeout(() => {
+                        this.updateStatus('Ready', 'green');
+                    }, 1000);
+                }, 1500);
+            }
+            
+            addMessage(content, isUser = false, sources = []) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message mb-4';
+                
+                const avatar = isUser ? 
+                    '<div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold">U</div>' :
+                    '<div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">AI</div>';
+                
+                let sourcesHtml = '';
+                if (sources.length > 0) {
+                    sourcesHtml = `
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            ${sources.map(source => `
+                                <span class="source-badge bg-${source.color}-500/20 text-${source.color}-100 px-2 py-1 rounded-full text-xs border border-${source.color}-400/30">
+                                    ${source.icon} ${source.name}
+                                </span>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                messageDiv.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        ${avatar}
+                        <div class="flex-1">
+                            <div class="bg-white/10 rounded-lg p-3 text-white">
+                                <p>${content}</p>
+                                ${sourcesHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                this.chatMessages.appendChild(messageDiv);
+                document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+            }
+            
+            async performSearch(query) {
+                this.addMessage(query, true);
+                this.searchInput.value = '';
+                
+                this.updateStatus('Processing query...', 'blue');
+                
+                // Simulate context-aware processing
+                await this.sleep(800);
+                this.updateStatus('Searching multiple sources...', 'yellow');
+                
+                // Simulate multi-source search
+                const sources = this.getActiveSources();
+                await this.sleep(1200);
+                
+                // Simulate RAG processing
+                if (document.getElementById('ragMode').checked) {
+                    this.updateStatus('Enhancing with RAG...', 'purple');
+                    await this.sleep(1000);
+                }
+                
+                // Generate response
+                const response = this.generateResponse(query, sources);
+                this.addMessage(response.content, false, response.sources);
+                
+                // Update counters
+                this.sourceCount.textContent = response.sources.length;
+                this.tokenCount.textContent = Math.floor(Math.random() * 2000) + 500;
+                
+                this.updateStatus('Ready', 'green');
+            }
+            
+            getActiveSources() {
+                const sources = [];
+                if (document.getElementById('googleSearch').checked) {
+                    sources.push({ name: 'Google', icon: '🔍', color: 'blue' });
+                }
+                if (document.getElementById('internalDocs').checked) {
+                    sources.push({ name: 'Internal Docs', icon: '📄', color: 'green' });
+                }
+                return sources;
+            }
+            
+            generateResponse(query, sources) {
+                const responses = [
+                    {
+                        content: `Based on my analysis of multiple sources, here's what I found about "${query}": This appears to be a complex topic that requires information from both web sources and internal documentation. I've aggregated relevant information and used RAG to provide you with the most accurate and contextual response.`,
+                        sources: sources
+                    },
+                    {
+                        content: `I've processed your query "${query}" using advanced context-aware understanding. After searching through Google and internal documentation, I can provide you with comprehensive insights. The RAG enhancement has helped me retrieve the most relevant information and generate a more accurate response.`,
+                        sources: sources
+                    },
+                    {
+                        content: `Great question about "${query}"! I've utilized multi-source aggregation to gather information from various sources. The Gemini API has helped me understand the context and nuances of your query, while the vector database search has retrieved the most relevant documents for a comprehensive answer.`,
+                        sources: sources
+                    }
+                ];
+                
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            updateStatus(text, color) {
+                this.statusText.textContent = text;
+                this.statusIndicator.className = `w-3 h-3 rounded-full bg-${color}-400`;
+            }
+            
+            clearChat() {
+                this.chatMessages.innerHTML = `
+                    <div class="chat-message mb-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                AI
+                            </div>
+                            <div class="flex-1">
+                                <div class="bg-white/10 rounded-lg p-3 text-white">
+                                    <p>👋 Chat cleared! How can I help you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.sourceCount.textContent = '0';
+                this.tokenCount.textContent = '0';
+            }
+            
+            exportChat() {
+                const messages = Array.from(this.chatMessages.children).map(msg => {
+                    const text = msg.querySelector('p').textContent;
+                    const isUser = msg.querySelector('.bg-gray-500') !== null;
+                    return `${isUser ? 'User' : 'AI'}: ${text}`;
+                }).join('\n\n');
+                
+                const blob = new Blob([messages], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'genai-search-chat.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Initialize the assistant when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new GenAISearchAssistant();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966b024324473c2e',t:'MTc1Mzc3NTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
