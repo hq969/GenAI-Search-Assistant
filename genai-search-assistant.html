@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenAI Search Assistant</title>
+    <title>GenAI Search Assistant - Advanced RAG System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -13,153 +13,316 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 25%, #7c3aed 50%, #be185d 75%, #dc2626 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .pulse-ring {
+            animation: pulseRing 2s infinite;
         }
         
-        .typing-animation::after {
-            content: '|';
-            animation: blink 1s infinite;
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
         
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+        .typing-indicator {
+            display: inline-block;
+            animation: typing 1.5s infinite;
         }
         
-        .source-badge {
-            transition: all 0.3s ease;
+        @keyframes typing {
+            0%, 60% { opacity: 1; }
+            30% { opacity: 0.5; }
         }
         
-        .source-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        .source-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .chat-message {
-            animation: slideIn 0.5s ease-out;
+        .source-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
         
-        @keyframes slideIn {
+        .message-slide-in {
+            animation: messageSlide 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes messageSlide {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
+        }
+        
+        .processing-wave {
+            animation: wave 2s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        
+        .rag-visualization {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: ragGlow 3s ease infinite;
+        }
+        
+        @keyframes ragGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <!-- Code File Header -->
-        <div class="glass-effect rounded-xl p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white text-sm font-bold">📄</span>
-                    </div>
-                    <div>
-                        <div class="text-white font-medium">genai-search-assistant.html</div>
-                        <div class="text-white/60 text-sm">GenAI Search Assistant • 450 lines • HTML/CSS/JS</div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="bg-green-500/20 text-green-100 px-2 py-1 rounded text-xs border border-green-400/30">Active</span>
-                    <span class="text-white/60 text-sm">Last modified: Just now</span>
-                </div>
-            </div>
-        </div>
+<body class="gradient-bg min-h-screen relative overflow-x-hidden">
+    <!-- Neural Network Background -->
+    <div class="neural-network">
+        <svg width="100%" height="100%" viewBox="0 0 1000 1000">
+            <defs>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <circle cx="25" cy="25" r="1" fill="white" opacity="0.3"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+        </svg>
+    </div>
 
-        <!-- Header -->
+    <div class="container mx-auto px-4 py-6 max-w-6xl relative z-10">
+        <!-- Advanced Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white mb-2">🤖 GenAI Search Assistant</h1>
-            <p class="text-white/80 text-lg">Powered by Gemini API • Multi-source RAG • Voice-enabled</p>
+            <div class="inline-flex items-center gap-3 mb-4">
+                <div class="relative">
+                    <div class="w-16 h-16 rag-visualization rounded-2xl flex items-center justify-center">
+                        <span class="text-2xl">🧠</span>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full pulse-ring"></div>
+                </div>
+                <div class="text-left">
+                    <h1 class="text-4xl font-bold text-white">GenAI Search Assistant</h1>
+                    <p class="text-white/70">Advanced RAG • Multi-Source Intelligence • Context-Aware</p>
+                </div>
+            </div>
             
-            <!-- Tech Stack Badges -->
-            <div class="flex flex-wrap justify-center gap-2 mt-4">
-                <span class="source-badge bg-blue-500/20 text-blue-100 px-3 py-1 rounded-full text-sm border border-blue-400/30">Gemini API</span>
-                <span class="source-badge bg-green-500/20 text-green-100 px-3 py-1 rounded-full text-sm border border-green-400/30">React</span>
-                <span class="source-badge bg-purple-500/20 text-purple-100 px-3 py-1 rounded-full text-sm border border-purple-400/30">LangChain</span>
-                <span class="source-badge bg-orange-500/20 text-orange-100 px-3 py-1 rounded-full text-sm border border-orange-400/30">Pinecone</span>
-                <span class="source-badge bg-red-500/20 text-red-100 px-3 py-1 rounded-full text-sm border border-red-400/30">Flask</span>
+            <!-- Enhanced Tech Stack -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+                <div class="source-card glass-effect rounded-xl p-3 text-center">
+                    <div class="text-2xl mb-1">🤖</div>
+                    <div class="text-white font-medium text-sm">Gemini API</div>
+                    <div class="text-white/60 text-xs">LLM Engine</div>
+                </div>
+                <div class="source-card glass-effect rounded-xl p-3 text-center">
+                    <div class="text-2xl mb-1">⚛️</div>
+                    <div class="text-white font-medium text-sm">React</div>
+                    <div class="text-white/60 text-xs">Frontend</div>
+                </div>
+                <div class="source-card glass-effect rounded-xl p-3 text-center">
+                    <div class="text-2xl mb-1">🔗</div>
+                    <div class="text-white font-medium text-sm">LangChain</div>
+                    <div class="text-white/60 text-xs">RAG Framework</div>
+                </div>
+                <div class="source-card glass-effect rounded-xl p-3 text-center">
+                    <div class="text-2xl mb-1">🌲</div>
+                    <div class="text-white font-medium text-sm">Pinecone</div>
+                    <div class="text-white/60 text-xs">Vector DB</div>
+                </div>
+                <div class="source-card glass-effect rounded-xl p-3 text-center">
+                    <div class="text-2xl mb-1">🐍</div>
+                    <div class="text-white font-medium text-sm">Flask</div>
+                    <div class="text-white/60 text-xs">Backend API</div>
+                </div>
             </div>
         </div>
 
-        <!-- Search Interface -->
-        <div class="glass-effect rounded-2xl p-6 mb-6">
-            <div class="flex gap-3 mb-4">
+        <!-- Advanced Search Interface -->
+        <div class="glass-effect rounded-3xl p-6 mb-6">
+            <div class="flex gap-4 mb-6">
                 <div class="flex-1 relative">
                     <input 
                         type="text" 
                         id="searchInput"
-                        placeholder="Ask me anything... I'll search Google, internal docs, and provide AI-powered insights"
-                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                        placeholder="Ask me anything... I'll analyze context, search multiple sources, and provide AI-enhanced insights"
+                        class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-lg"
                     >
-                    <div id="voiceIndicator" class="absolute right-3 top-3 hidden">
-                        <div class="w-6 h-6 bg-red-500 rounded-full pulse-animation flex items-center justify-center">
-                            <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <div id="voiceIndicator" class="absolute right-4 top-4 hidden">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full processing-wave"></div>
+                            <div class="w-3 h-3 bg-red-500 rounded-full processing-wave" style="animation-delay: 0.2s"></div>
+                            <div class="w-3 h-3 bg-red-500 rounded-full processing-wave" style="animation-delay: 0.4s"></div>
                         </div>
                     </div>
                 </div>
                 <button 
                     id="voiceBtn"
-                    class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors duration-200 flex items-center gap-2"
+                    class="px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-2xl transition-all duration-300 flex items-center gap-2 font-medium"
                 >
                     🎤 Voice
                 </button>
                 <button 
                     id="searchBtn"
-                    class="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-200 font-medium"
+                    class="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl transition-all duration-300 font-medium shadow-lg"
                 >
-                    Search
+                    🔍 Search
                 </button>
             </div>
             
-            <!-- Search Options -->
-            <div class="flex flex-wrap gap-3">
-                <label class="flex items-center gap-2 text-white/80">
-                    <input type="checkbox" id="googleSearch" checked class="rounded">
-                    <span>Google Search</span>
-                </label>
-                <label class="flex items-center gap-2 text-white/80">
-                    <input type="checkbox" id="internalDocs" checked class="rounded">
-                    <span>Internal Docs</span>
-                </label>
-                <label class="flex items-center gap-2 text-white/80">
-                    <input type="checkbox" id="ragMode" checked class="rounded">
-                    <span>RAG Enhancement</span>
-                </label>
+            <!-- Advanced Configuration -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-effect rounded-xl p-4">
+                    <h3 class="text-white font-medium mb-3 flex items-center gap-2">
+                        🎯 Query Processing
+                    </h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="contextAware" checked class="rounded">
+                            <span>Context-aware understanding</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="intentAnalysis" checked class="rounded">
+                            <span>Intent analysis</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="entityExtraction" checked class="rounded">
+                            <span>Entity extraction</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-4">
+                    <h3 class="text-white font-medium mb-3 flex items-center gap-2">
+                        📊 Data Sources
+                    </h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="googleSearch" checked class="rounded">
+                            <span>Google Search API</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="internalDocs" checked class="rounded">
+                            <span>Internal documentation</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="knowledgeBase" checked class="rounded">
+                            <span>Knowledge base</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-4">
+                    <h3 class="text-white font-medium mb-3 flex items-center gap-2">
+                        🔬 RAG Settings
+                    </h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="ragMode" checked class="rounded">
+                            <span>RAG enhancement</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="vectorSearch" checked class="rounded">
+                            <span>Vector similarity search</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-white/80 text-sm">
+                            <input type="checkbox" id="reranking" checked class="rounded">
+                            <span>Result re-ranking</span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Chat Interface -->
-        <div id="chatContainer" class="glass-effect rounded-2xl p-6 min-h-96 max-h-96 overflow-y-auto mb-6">
+        <!-- Processing Pipeline Visualization -->
+        <div id="processingPipeline" class="glass-effect rounded-2xl p-6 mb-6 hidden">
+            <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                ⚡ Processing Pipeline
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div id="step1" class="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-2xl mb-1">🧠</div>
+                    <div class="text-white/80 text-sm">Query Analysis</div>
+                    <div id="step1Status" class="w-full h-1 bg-white/20 rounded mt-2">
+                        <div class="h-full bg-blue-400 rounded transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="step2" class="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-2xl mb-1">🔍</div>
+                    <div class="text-white/80 text-sm">Multi-Source Search</div>
+                    <div id="step2Status" class="w-full h-1 bg-white/20 rounded mt-2">
+                        <div class="h-full bg-green-400 rounded transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="step3" class="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-2xl mb-1">📊</div>
+                    <div class="text-white/80 text-sm">Vector Retrieval</div>
+                    <div id="step3Status" class="w-full h-1 bg-white/20 rounded mt-2">
+                        <div class="h-full bg-purple-400 rounded transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="step4" class="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-2xl mb-1">🔗</div>
+                    <div class="text-white/80 text-sm">RAG Processing</div>
+                    <div id="step4Status" class="w-full h-1 bg-white/20 rounded mt-2">
+                        <div class="h-full bg-orange-400 rounded transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="step5" class="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-2xl mb-1">✨</div>
+                    <div class="text-white/80 text-sm">AI Generation</div>
+                    <div id="step5Status" class="w-full h-1 bg-white/20 rounded mt-2">
+                        <div class="h-full bg-pink-400 rounded transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Chat Interface -->
+        <div id="chatContainer" class="glass-effect rounded-3xl p-6 min-h-96 max-h-96 overflow-y-auto mb-6">
             <div id="chatMessages">
-                <div class="chat-message mb-4">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                <div class="message-slide-in mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rag-visualization rounded-xl flex items-center justify-center text-white font-bold">
                             AI
                         </div>
                         <div class="flex-1">
-                            <div class="bg-white/10 rounded-lg p-3 text-white">
-                                <p>👋 Hello! I'm your GenAI Search Assistant. I can help you find information from multiple sources including Google Search and internal documentation. Try asking me something!</p>
+                            <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-4 text-white border border-white/10">
+                                <p class="mb-3">🚀 Welcome to the Advanced GenAI Search Assistant! I'm powered by cutting-edge RAG technology and can:</p>
+                                <ul class="list-disc list-inside space-y-1 text-white/90 text-sm">
+                                    <li>Understand context and intent in your queries</li>
+                                    <li>Search multiple sources simultaneously (Google + Internal docs)</li>
+                                    <li>Use vector similarity for precise information retrieval</li>
+                                    <li>Generate contextually-aware responses using RAG</li>
+                                    <li>Process voice input with advanced speech recognition</li>
+                                </ul>
+                                <p class="mt-3 text-white/80">Try asking me something complex!</p>
                             </div>
                         </div>
                     </div>
@@ -167,45 +330,63 @@
             </div>
         </div>
 
-        <!-- Status Bar -->
-        <div class="glass-effect rounded-xl p-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <div id="statusIndicator" class="w-3 h-3 bg-green-400 rounded-full"></div>
-                        <span id="statusText" class="text-white/80 text-sm">Ready</span>
+        <!-- Advanced Status Dashboard -->
+        <div class="glass-effect rounded-2xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <div id="systemStatus" class="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <span class="text-white/80 text-sm font-medium">System Status</span>
                     </div>
-                    <div class="text-white/60 text-sm">
-                        Sources: <span id="sourceCount">0</span> • Tokens: <span id="tokenCount">0</span>
-                    </div>
+                    <div id="statusText" class="text-white text-lg font-semibold">Ready</div>
                 </div>
-                <div class="flex gap-2">
-                    <button id="clearChat" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white/80 rounded-lg text-sm transition-colors">
-                        Clear Chat
-                    </button>
-                    <button id="exportChat" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white/80 rounded-lg text-sm transition-colors">
-                        Export
-                    </button>
+                
+                <div class="text-center">
+                    <div class="text-white/80 text-sm font-medium mb-2">Active Sources</div>
+                    <div id="sourceCount" class="text-white text-lg font-semibold">3</div>
+                    <div class="text-white/60 text-xs">Google • Docs • KB</div>
                 </div>
+                
+                <div class="text-center">
+                    <div class="text-white/80 text-sm font-medium mb-2">Vector Embeddings</div>
+                    <div id="embeddingCount" class="text-white text-lg font-semibold">1.2M</div>
+                    <div class="text-white/60 text-xs">Indexed documents</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-white/80 text-sm font-medium mb-2">Response Time</div>
+                    <div id="responseTime" class="text-white text-lg font-semibold">0.8s</div>
+                    <div class="text-white/60 text-xs">Average latency</div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-3 mt-6">
+                <button id="clearChat" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/80 rounded-xl text-sm transition-colors">
+                    🗑️ Clear Chat
+                </button>
+                <button id="exportChat" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/80 rounded-xl text-sm transition-colors">
+                    📤 Export Results
+                </button>
+                <button id="settingsBtn" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/80 rounded-xl text-sm transition-colors">
+                    ⚙️ Advanced Settings
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        class GenAISearchAssistant {
+        class AdvancedGenAIAssistant {
             constructor() {
                 this.isListening = false;
                 this.recognition = null;
                 this.chatMessages = document.getElementById('chatMessages');
                 this.searchInput = document.getElementById('searchInput');
-                this.statusIndicator = document.getElementById('statusIndicator');
-                this.statusText = document.getElementById('statusText');
-                this.sourceCount = document.getElementById('sourceCount');
-                this.tokenCount = document.getElementById('tokenCount');
+                this.processingPipeline = document.getElementById('processingPipeline');
+                this.currentQuery = '';
                 
                 this.initializeVoiceRecognition();
                 this.bindEvents();
-                this.simulateInitialization();
+                this.simulateSystemInitialization();
             }
             
             initializeVoiceRecognition() {
@@ -213,25 +394,36 @@
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     this.recognition = new SpeechRecognition();
                     this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
+                    this.recognition.interimResults = true;
                     this.recognition.lang = 'en-US';
                     
                     this.recognition.onstart = () => {
                         this.isListening = true;
                         document.getElementById('voiceIndicator').classList.remove('hidden');
-                        this.updateStatus('Listening...', 'blue');
+                        this.updateSystemStatus('Listening for voice input...', 'blue');
                     };
                     
                     this.recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
+                        let transcript = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            transcript += event.results[i][0].transcript;
+                        }
                         this.searchInput.value = transcript;
-                        this.performSearch(transcript);
+                        
+                        if (event.results[event.results.length - 1].isFinal) {
+                            this.performAdvancedSearch(transcript);
+                        }
                     };
                     
                     this.recognition.onend = () => {
                         this.isListening = false;
                         document.getElementById('voiceIndicator').classList.add('hidden');
-                        this.updateStatus('Ready', 'green');
+                        this.updateSystemStatus('Ready', 'green');
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.updateSystemStatus('Voice recognition error', 'red');
                     };
                 }
             }
@@ -245,14 +437,14 @@
                             this.recognition.start();
                         }
                     } else {
-                        alert('Voice recognition not supported in this browser');
+                        this.showNotification('Voice recognition not supported in this browser', 'warning');
                     }
                 });
                 
                 document.getElementById('searchBtn').addEventListener('click', () => {
                     const query = this.searchInput.value.trim();
                     if (query) {
-                        this.performSearch(query);
+                        this.performAdvancedSearch(query);
                     }
                 });
                 
@@ -260,7 +452,7 @@
                     if (e.key === 'Enter') {
                         const query = this.searchInput.value.trim();
                         if (query) {
-                            this.performSearch(query);
+                            this.performAdvancedSearch(query);
                         }
                     }
                 });
@@ -270,48 +462,218 @@
                 });
                 
                 document.getElementById('exportChat').addEventListener('click', () => {
-                    this.exportChat();
+                    this.exportResults();
+                });
+                
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    this.showAdvancedSettings();
                 });
             }
             
-            simulateInitialization() {
-                this.updateStatus('Initializing Gemini API...', 'yellow');
-                setTimeout(() => {
-                    this.updateStatus('Loading vector database...', 'yellow');
-                    setTimeout(() => {
-                        this.updateStatus('Ready', 'green');
-                    }, 1000);
-                }, 1500);
+            simulateSystemInitialization() {
+                const steps = [
+                    { text: 'Initializing Gemini API...', duration: 1000 },
+                    { text: 'Loading LangChain framework...', duration: 800 },
+                    { text: 'Connecting to Pinecone vector database...', duration: 1200 },
+                    { text: 'Warming up RAG pipeline...', duration: 900 },
+                    { text: 'System ready for advanced queries', duration: 500 }
+                ];
+                
+                let currentStep = 0;
+                const processStep = () => {
+                    if (currentStep < steps.length) {
+                        this.updateSystemStatus(steps[currentStep].text, 'yellow');
+                        setTimeout(() => {
+                            currentStep++;
+                            if (currentStep < steps.length) {
+                                processStep();
+                            } else {
+                                this.updateSystemStatus('Ready', 'green');
+                            }
+                        }, steps[currentStep].duration);
+                    }
+                };
+                
+                processStep();
             }
             
-            addMessage(content, isUser = false, sources = []) {
+            async performAdvancedSearch(query) {
+                this.currentQuery = query;
+                this.addMessage(query, true);
+                this.searchInput.value = '';
+                
+                // Show processing pipeline
+                this.processingPipeline.classList.remove('hidden');
+                
+                // Step 1: Query Analysis
+                await this.processStep(1, 'Analyzing query context and intent...', 1000);
+                
+                // Step 2: Multi-source search
+                await this.processStep(2, 'Searching multiple data sources...', 1500);
+                
+                // Step 3: Vector retrieval
+                await this.processStep(3, 'Performing vector similarity search...', 1200);
+                
+                // Step 4: RAG processing
+                await this.processStep(4, 'Enhancing with RAG pipeline...', 1800);
+                
+                // Step 5: AI generation
+                await this.processStep(5, 'Generating contextual response...', 1000);
+                
+                // Generate and display response
+                const response = this.generateAdvancedResponse(query);
+                this.addMessage(response.content, false, response.sources, response.metadata);
+                
+                // Update metrics
+                this.updateMetrics();
+                
+                // Hide processing pipeline
+                setTimeout(() => {
+                    this.processingPipeline.classList.add('hidden');
+                    this.resetProcessingSteps();
+                }, 2000);
+                
+                this.updateSystemStatus('Ready', 'green');
+            }
+            
+            async processStep(stepNumber, statusText, duration) {
+                this.updateSystemStatus(statusText, 'blue');
+                
+                // Animate progress bar
+                const progressBar = document.querySelector(`#step${stepNumber}Status .bg-blue-400, #step${stepNumber}Status .bg-green-400, #step${stepNumber}Status .bg-purple-400, #step${stepNumber}Status .bg-orange-400, #step${stepNumber}Status .bg-pink-400`);
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                }
+                
+                await this.sleep(duration);
+            }
+            
+            resetProcessingSteps() {
+                for (let i = 1; i <= 5; i++) {
+                    const progressBar = document.querySelector(`#step${i}Status div`);
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                    }
+                }
+            }
+            
+            generateAdvancedResponse(query) {
+                const responses = [
+                    {
+                        content: `Based on my comprehensive analysis using advanced RAG techniques, I've processed your query "${query}" through multiple intelligence layers. Here's what I discovered:
+
+🧠 **Context Analysis**: Your query indicates a complex information need requiring multi-source aggregation.
+
+🔍 **Search Results**: I've retrieved relevant information from Google Search API and internal documentation, then enhanced it using vector similarity matching.
+
+📊 **Key Insights**: The RAG pipeline has identified the most contextually relevant information and synthesized it into this comprehensive response.
+
+✨ **AI Enhancement**: Using Gemini's advanced language understanding, I've generated this contextually-aware answer that addresses both explicit and implicit aspects of your question.`,
+                        sources: this.getActiveSources(),
+                        metadata: {
+                            confidence: 0.94,
+                            sources_count: 8,
+                            processing_time: '1.2s',
+                            tokens_used: Math.floor(Math.random() * 1500) + 800
+                        }
+                    },
+                    {
+                        content: `I've utilized the full power of our GenAI search system to address "${query}". Here's my comprehensive analysis:
+
+🎯 **Intent Recognition**: Advanced NLP processing identified your core information need and related subtopics.
+
+🌐 **Multi-Source Intelligence**: Simultaneously searched Google's vast index and our curated internal knowledge base.
+
+🔬 **Vector Retrieval**: Pinecone vector database returned the most semantically similar content using state-of-the-art embeddings.
+
+🤖 **RAG Enhancement**: LangChain framework orchestrated the retrieval-augmented generation process for maximum accuracy.
+
+The result is this contextually-rich, factually-grounded response that goes beyond simple keyword matching.`,
+                        sources: this.getActiveSources(),
+                        metadata: {
+                            confidence: 0.91,
+                            sources_count: 12,
+                            processing_time: '0.9s',
+                            tokens_used: Math.floor(Math.random() * 1800) + 600
+                        }
+                    }
+                ];
+                
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            getActiveSources() {
+                const sources = [];
+                if (document.getElementById('googleSearch').checked) {
+                    sources.push({ name: 'Google Search', icon: '🔍', color: 'blue', count: Math.floor(Math.random() * 5) + 3 });
+                }
+                if (document.getElementById('internalDocs').checked) {
+                    sources.push({ name: 'Internal Docs', icon: '📄', color: 'green', count: Math.floor(Math.random() * 8) + 2 });
+                }
+                if (document.getElementById('knowledgeBase').checked) {
+                    sources.push({ name: 'Knowledge Base', icon: '🧠', color: 'purple', count: Math.floor(Math.random() * 6) + 4 });
+                }
+                return sources;
+            }
+            
+            addMessage(content, isUser = false, sources = [], metadata = null) {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'chat-message mb-4';
+                messageDiv.className = 'message-slide-in mb-6';
                 
                 const avatar = isUser ? 
-                    '<div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold">U</div>' :
-                    '<div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">AI</div>';
+                    '<div class="w-10 h-10 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl flex items-center justify-center text-white font-bold">U</div>' :
+                    '<div class="w-10 h-10 rag-visualization rounded-xl flex items-center justify-center text-white font-bold">AI</div>';
                 
                 let sourcesHtml = '';
                 if (sources.length > 0) {
                     sourcesHtml = `
-                        <div class="mt-2 flex flex-wrap gap-2">
-                            ${sources.map(source => `
-                                <span class="source-badge bg-${source.color}-500/20 text-${source.color}-100 px-2 py-1 rounded-full text-xs border border-${source.color}-400/30">
-                                    ${source.icon} ${source.name}
-                                </span>
-                            `).join('')}
+                        <div class="mt-4 p-3 bg-white/5 rounded-xl border border-white/10">
+                            <div class="text-white/80 text-sm font-medium mb-2">📊 Sources Retrieved:</div>
+                            <div class="flex flex-wrap gap-2">
+                                ${sources.map(source => `
+                                    <div class="source-card bg-${source.color}-500/20 text-${source.color}-100 px-3 py-1 rounded-full text-xs border border-${source.color}-400/30 flex items-center gap-1">
+                                        ${source.icon} ${source.name} (${source.count})
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `;
                 }
                 
+                let metadataHtml = '';
+                if (metadata) {
+                    metadataHtml = `
+                        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            <div class="bg-white/5 rounded-lg p-2 text-center">
+                                <div class="text-white/60">Confidence</div>
+                                <div class="text-white font-medium">${(metadata.confidence * 100).toFixed(1)}%</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-2 text-center">
+                                <div class="text-white/60">Sources</div>
+                                <div class="text-white font-medium">${metadata.sources_count}</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-2 text-center">
+                                <div class="text-white/60">Time</div>
+                                <div class="text-white font-medium">${metadata.processing_time}</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-2 text-center">
+                                <div class="text-white/60">Tokens</div>
+                                <div class="text-white font-medium">${metadata.tokens_used}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                const bgClass = isUser ? 'bg-white/10' : 'bg-gradient-to-r from-blue-500/20 to-purple-500/20';
+                
                 messageDiv.innerHTML = `
-                    <div class="flex items-start gap-3">
+                    <div class="flex items-start gap-4">
                         ${avatar}
                         <div class="flex-1">
-                            <div class="bg-white/10 rounded-lg p-3 text-white">
-                                <p>${content}</p>
+                            <div class="${bgClass} rounded-2xl p-4 text-white border border-white/10">
+                                <div class="whitespace-pre-line">${content}</div>
                                 ${sourcesHtml}
+                                ${metadataHtml}
                             </div>
                         </div>
                     </div>
@@ -321,105 +683,99 @@
                 document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
             }
             
-            async performSearch(query) {
-                this.addMessage(query, true);
-                this.searchInput.value = '';
-                
-                this.updateStatus('Processing query...', 'blue');
-                
-                // Simulate context-aware processing
-                await this.sleep(800);
-                this.updateStatus('Searching multiple sources...', 'yellow');
-                
-                // Simulate multi-source search
-                const sources = this.getActiveSources();
-                await this.sleep(1200);
-                
-                // Simulate RAG processing
-                if (document.getElementById('ragMode').checked) {
-                    this.updateStatus('Enhancing with RAG...', 'purple');
-                    await this.sleep(1000);
-                }
-                
-                // Generate response
-                const response = this.generateResponse(query, sources);
-                this.addMessage(response.content, false, response.sources);
-                
-                // Update counters
-                this.sourceCount.textContent = response.sources.length;
-                this.tokenCount.textContent = Math.floor(Math.random() * 2000) + 500;
-                
-                this.updateStatus('Ready', 'green');
+            updateSystemStatus(text, color) {
+                document.getElementById('statusText').textContent = text;
+                const indicator = document.getElementById('systemStatus');
+                indicator.className = `w-3 h-3 rounded-full bg-${color}-400`;
             }
             
-            getActiveSources() {
-                const sources = [];
-                if (document.getElementById('googleSearch').checked) {
-                    sources.push({ name: 'Google', icon: '🔍', color: 'blue' });
-                }
-                if (document.getElementById('internalDocs').checked) {
-                    sources.push({ name: 'Internal Docs', icon: '📄', color: 'green' });
-                }
-                return sources;
-            }
-            
-            generateResponse(query, sources) {
-                const responses = [
-                    {
-                        content: `Based on my analysis of multiple sources, here's what I found about "${query}": This appears to be a complex topic that requires information from both web sources and internal documentation. I've aggregated relevant information and used RAG to provide you with the most accurate and contextual response.`,
-                        sources: sources
-                    },
-                    {
-                        content: `I've processed your query "${query}" using advanced context-aware understanding. After searching through Google and internal documentation, I can provide you with comprehensive insights. The RAG enhancement has helped me retrieve the most relevant information and generate a more accurate response.`,
-                        sources: sources
-                    },
-                    {
-                        content: `Great question about "${query}"! I've utilized multi-source aggregation to gather information from various sources. The Gemini API has helped me understand the context and nuances of your query, while the vector database search has retrieved the most relevant documents for a comprehensive answer.`,
-                        sources: sources
-                    }
-                ];
-                
-                return responses[Math.floor(Math.random() * responses.length)];
-            }
-            
-            updateStatus(text, color) {
-                this.statusText.textContent = text;
-                this.statusIndicator.className = `w-3 h-3 rounded-full bg-${color}-400`;
+            updateMetrics() {
+                document.getElementById('responseTime').textContent = (Math.random() * 0.8 + 0.4).toFixed(1) + 's';
+                document.getElementById('embeddingCount').textContent = (Math.random() * 0.3 + 1.2).toFixed(1) + 'M';
             }
             
             clearChat() {
                 this.chatMessages.innerHTML = `
-                    <div class="chat-message mb-4">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                    <div class="message-slide-in mb-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rag-visualization rounded-xl flex items-center justify-center text-white font-bold">
                                 AI
                             </div>
                             <div class="flex-1">
-                                <div class="bg-white/10 rounded-lg p-3 text-white">
-                                    <p>👋 Chat cleared! How can I help you today?</p>
+                                <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-4 text-white border border-white/10">
+                                    <p>🔄 Chat cleared! Ready for your next advanced query. I'm here to help with complex information needs using the full power of RAG technology.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
-                this.sourceCount.textContent = '0';
-                this.tokenCount.textContent = '0';
             }
             
-            exportChat() {
+            exportResults() {
                 const messages = Array.from(this.chatMessages.children).map(msg => {
-                    const text = msg.querySelector('p').textContent;
-                    const isUser = msg.querySelector('.bg-gray-500') !== null;
-                    return `${isUser ? 'User' : 'AI'}: ${text}`;
-                }).join('\n\n');
+                    const text = msg.querySelector('.whitespace-pre-line').textContent;
+                    const isUser = msg.querySelector('.bg-white\\/10') !== null;
+                    return `${isUser ? 'User' : 'AI Assistant'}: ${text}`;
+                }).join('\n\n' + '='.repeat(50) + '\n\n');
                 
-                const blob = new Blob([messages], { type: 'text/plain' });
+                const exportData = `GenAI Search Assistant - Conversation Export
+Generated: ${new Date().toLocaleString()}
+Query: ${this.currentQuery}
+
+${'='.repeat(50)}
+
+${messages}
+
+${'='.repeat(50)}
+
+System Information:
+- RAG Enhancement: Enabled
+- Vector Search: Active
+- Multi-source: Google + Internal Docs + Knowledge Base
+- Processing Framework: LangChain + Pinecone + Gemini API
+`;
+                
+                const blob = new Blob([exportData], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'genai-search-chat.txt';
+                a.download = `genai-search-results-${Date.now()}.txt`;
                 a.click();
                 URL.revokeObjectURL(url);
+                
+                this.showNotification('Results exported successfully!', 'success');
+            }
+            
+            showAdvancedSettings() {
+                this.showNotification('Advanced settings panel would open here in a full implementation', 'info');
+            }
+            
+            showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl text-white font-medium transition-all duration-300 transform translate-x-full`;
+                
+                const colors = {
+                    success: 'bg-green-500',
+                    warning: 'bg-yellow-500',
+                    error: 'bg-red-500',
+                    info: 'bg-blue-500'
+                };
+                
+                notification.classList.add(colors[type] || colors.info);
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full');
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
             }
             
             sleep(ms) {
@@ -427,10 +783,10 @@
             }
         }
         
-        // Initialize the assistant when the page loads
+        // Initialize the advanced assistant
         document.addEventListener('DOMContentLoaded', () => {
-            new GenAISearchAssistant();
+            new AdvancedGenAIAssistant();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966b024324473c2e',t:'MTc1Mzc3NTI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966b104042db1c69',t:'MTc1Mzc3NTgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
