@@ -1,121 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>GenAI Search Assistant – Google + Gemini</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-/* ====== BASIC LAYOUT ====== */
-body {
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:#f5f5f5;
-    color:#333;
-}
-header {
-    background:#2c3e50;
-    color:#fff;
-    padding:10px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-header h1 {margin:0;font-size:1.3rem;}
-main {
-    padding:20px;
-}
-input[type="text"] {
-    width:60%;
-    padding:8px;
-    font-size:1rem;
-    margin-right:8px;
-}
-button {
-    padding:8px 14px;
-    background:#3498db;
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    cursor:pointer;
-}
-button:hover {background:#2980b9;}
-.results, .rag-visualization {
-    margin-top:20px;
-    background:#fff;
-    padding:15px;
-    border-radius:6px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-.rag-visualization {
-    background:#eef6ff;
-}
-.voice-btn {
-    background:#27ae60;
-}
-.voice-btn:hover {
-    background:#1e8449;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>GenAI Search Assistant – Google + Gemini</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Link to CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<header>
+
+  <header>
     <h1>GenAI Search Assistant</h1>
-    <div>
-        <button id="voiceBtn" class="voice-btn">🎤 Voice</button>
-    </div>
-</header>
+    <button id="voiceBtn" class="voice-btn">🎤 Voice</button>
+  </header>
 
-<main>
-    <div>
-        <input id="queryInput" type="text" placeholder="Ask anything...">
-        <button id="searchBtn">Search</button>
+  <main>
+    <div class="search-bar">
+      <input id="queryInput" type="text" placeholder="Ask anything...">
+      <button id="searchBtn">Search</button>
     </div>
 
-    <div class="results" id="results">
-        <!-- Search / LLM results will appear here -->
-    </div>
+    <section class="results" id="results">
+      <!-- Search / AI results will appear here -->
+    </section>
 
-    <div class="rag-visualization" id="ragViz">
-        <!-- RAG visualization will appear here -->
-    </div>
-</main>
+    <section class="rag-visualization" id="ragViz">
+      <!-- RAG visualization will appear here -->
+    </section>
+  </main>
 
-<script>
-/* ====== SIMPLE CLIENT LOGIC ====== */
-
-// Example search button handler
-document.getElementById('searchBtn').addEventListener('click', () => {
-    const query = document.getElementById('queryInput').value.trim();
-    if(!query) return;
-    displayResult("Searching for: " + query);
-    displayRAG("Visualizing retrieval & generation steps for: " + query);
-});
-
-// Example voice recognition (browser-based, experimental)
-document.getElementById('voiceBtn').addEventListener('click', () => {
-    if(!('webkitSpeechRecognition' in window)){
-        alert("Speech recognition not supported in this browser.");
-        return;
-    }
-    const rec = new webkitSpeechRecognition();
-    rec.lang = 'en-US';
-    rec.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        document.getElementById('queryInput').value = text;
-        displayResult("Voice query recognized: " + text);
-        displayRAG("Processing RAG pipeline for voice input…");
-    };
-    rec.start();
-});
-
-function displayResult(text){
-    document.getElementById('results').innerHTML = `<p>${text}</p>`;
-}
-function displayRAG(text){
-    document.getElementById('ragViz').innerHTML = `<p>${text}</p>`;
-}
-</script>
+  <!-- Link to JS -->
+  <script src="script.js"></script>
 
 </body>
 </html>
