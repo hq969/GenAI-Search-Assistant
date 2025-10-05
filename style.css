@@ -1,0 +1,82 @@
+/* ===== GENERAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #333;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 1.5rem;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  margin: 20px auto;
+  text-align: center;
+}
+
+input[type="text"] {
+  width: 60%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+.voice-btn {
+  background: #27ae60;
+}
+
+.voice-btn:hover {
+  background: #1e8449;
+}
+
+/* ===== RESULTS & VISUALIZATION ===== */
+.results, .rag-visualization {
+  max-width: 800px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.rag-visualization {
+  background: #eef6ff;
+}
+
+.results p, .rag-visualization p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
